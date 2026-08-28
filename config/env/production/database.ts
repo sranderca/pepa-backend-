@@ -1,10 +1,7 @@
 import { parse } from "pg-connection-string";
 
 export default ({ env }: any) => {
-  // Le ponemos un '' de respaldo por si la variable no está lista en el momento del build
   const dbUrl = env("DATABASE_URL", "");
-
-  // Si hay URL la desarmamos, si no, pasamos datos vacíos para que no estalle
   const config = dbUrl
     ? parse(dbUrl)
     : { host: "", port: 5432, database: "", user: "", password: "" };
@@ -14,13 +11,11 @@ export default ({ env }: any) => {
       client: "postgres",
       connection: {
         host: config.host,
-        port: config.port,
+        port: Number(config.port) || 5432,
         database: config.database,
         user: config.user,
         password: config.password,
-        ssl: {
-          rejectUnauthorized: false,
-        },
+        // Eliminamos el bloque SSL porque Railway interno no lo requiere
       },
       debug: false,
     },

@@ -1,7 +1,14 @@
 import { parse } from "pg-connection-string";
 
 export default ({ env }: any) => {
-  const config = parse(env("DATABASE_URL"));
+  // Le ponemos un '' de respaldo por si la variable no está lista en el momento del build
+  const dbUrl = env("DATABASE_URL", "");
+
+  // Si hay URL la desarmamos, si no, pasamos datos vacíos para que no estalle
+  const config = dbUrl
+    ? parse(dbUrl)
+    : { host: "", port: 5432, database: "", user: "", password: "" };
+
   return {
     connection: {
       client: "postgres",
